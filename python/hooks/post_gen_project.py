@@ -115,6 +115,7 @@ def setup():
     install_packages()
     if not devenv_used:
         run_in_venv("pre-commit", "install")
+        os.remove(".envrc")
     else:
         remove_precommit_config()  # devenv will manage pre-commit
 
