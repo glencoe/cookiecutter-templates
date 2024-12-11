@@ -20,7 +20,7 @@
     enable = true;
     uv.enable = true;
     uv.sync.enable = true;
-    version = "{{ cookiecutter.mininum_python_version }}";
+    version = "{{ cookiecutter.minimum_python_version }}";
   };
 
   pre-commit.hooks = {
