@@ -80,6 +80,7 @@ def uv_run(*args):
 
 def git_init():
     run("git", "init")
+    run("git", "remote", "add", "origin", "{{ cookiecutter.git_repository }}")
 
 
 def remove_precommit_config():
