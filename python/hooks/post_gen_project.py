@@ -120,7 +120,6 @@ def create_python_version_file():
 
 def setup():
     global run
-    create_project_directories()
     create_python_version_file()
     if devenv_used:
         run = _devenv_run

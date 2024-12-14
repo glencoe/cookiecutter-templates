@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">={{ cookiecutter.minimum_python_version }}"
 dependencies = []
 
+[project.scripts]
+{{ cookiecutter.project_slug }} = "{{ cookiecutter.project_slug }}.main:main"
+
 [tool.ruff]
 include = ["pyproject.toml", "src/**/*.py", "src/**/*.pyi", "testing/**/*.py"]
 
