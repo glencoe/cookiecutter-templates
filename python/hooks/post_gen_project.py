@@ -40,7 +40,7 @@ def create_project_directories():
 
 
 devenv_used = {%if cookiecutter.use_devenv %} True {% else %} False {% endif %}
-
+git_cliff = {% if cookiecutter.git_cliff %} True {% else %} False {% endif %}
 
 def uv_add(*package):
     uv("add", *package)
@@ -53,21 +53,39 @@ def add_packages(*p):
 def add_dev_deps():
     print("INFO: adding python dev dependencies")
 
-    add_packages(
+    ps_dev = [
+        "--group",
+        "dev",
         "pytest",
         "nox",
         "coverage",
-        "git-cliff",
-        "ruff",
         "mypy",
+    ]
+
+    if git_cliff:
+        ps_dev.append("git-cliff", "opr")
+    else:
+        ps_dev.extend(["towncrier", "bump_my_version"])
+    add_packages(*ps_dev)
+
+    ps_lint = [
+        "--group",
+        "lint",
+        "ruff"
+    ]
+    add_packages(*ps_lint)
+    ps_lsp = [
+        "--group",
+        "lsp",
         "python-lsp-server",
         "pylsp-rope",
         "pylsp-mypy",
-    )
+    ]
+    add_packages(*ps_lsp)
 
 
 def add_extra_dev_deps():
-    add_packages("pre-commit")
+    add_packages("--group", "dev", "pre-commit")
 
 
 def install_packages():

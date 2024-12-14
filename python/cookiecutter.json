@@ -5,6 +5,7 @@
   "minimum_python_version": ["3.10", "3.11", "3.12", "3.13"],
   "description": "",
   "use_devenv": false,
-  "git_repository": "git@github.com:{{ cookiecutter.author }}/{{ cookiecutter.project_slug }}.git"
+  "git_repository": "git@github.com:{{ cookiecutter.author }}/{{ cookiecutter.project_slug }}.git",
+  "git_cliff": false
 }
 

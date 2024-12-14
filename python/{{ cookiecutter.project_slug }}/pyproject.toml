@@ -97,11 +97,13 @@ omit = ["testing/**/*.py"]
 source = ["src/{{ cookiecutter.project_slug }}"]
 command_line = "-m pytest"
 
+{% if cookiecutter.git_cliff %}
+
 [tool.git-cliff.bump]
 breaking_always_bump_major = false  # only bump major if we're >= 1.0
 
 
-[changelog]
+[tool.git-cliff.changelog]
 # template for the changelog header
 header = """
 # Changelog\n
@@ -112,15 +114,16 @@ All notable changes to this project will be documented in this file.\n
 {% raw %}
 body = """
 {% if version %}\
-    ## [{{ version | trim_start_matches(pat="v") } - {{ timestamp | date(format="%Y-%m-%d") }
-    {% else %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
     ## [unreleased]
 {% endif %}\
 {% for group, commits in commits | group_by(attribute="group") %}
-    ### {{ group | striptags | trim | upper_first }    {% for commit in commits %}
-        - {% if commit.scope %}*({{ commit.scope }* {% endif %}\
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits %}
+        - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
             {% if commit.breaking %}[**breaking**] {% endif %}\
-            {{ commit.message | upper_first }
+            {{ commit.message | upper_first }}\
     {% endfor %}
 {% endfor %}\n
 """
@@ -140,7 +143,7 @@ postprocessors = [
 # output file path
 # output = "test.md"
 
-[git]
+[tool.git-cliff.git]
 # parse the commits based on https://www.conventionalcommits.org
 conventional_commits = true
 # filter out the commits that are not conventional
@@ -179,3 +182,59 @@ topo_order = false
 # sort the commits inside sections by oldest/newest order
 sort_commits = "oldest"
 
+{% else %}
+
+{% raw %}
+[tool.bumpversion]
+current_version = "0.2.1-rc10"
+parse = """(?x)
+    (?P<major>0|[1-9]\\d*)\\.
+    (?P<minor>0|[1-9]\\d*)\\.
+    (?P<patch>0|[1-9]\\d*)
+    (?:
+        -                             # dash separator for pre-release section
+        (?P<pre_label>[a-zA-Z-]+)         # pre-release label
+        (?P<pre_number>0|[1-9]\\d*)        # pre-release version number
+    )?                                # pre-release section is optional
+"""
+serialize = [
+    "{major}.{minor}.{patch}-{pre_label}{distance_to_latest_tag}", # automatically increase pre_number based on commits
+    "{major}.{minor}.{patch}",
+    ]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+ignore_missing_files = false
+tag = true
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "bump: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "bump: {current_version} → {new_version}"
+commit_args = "--no-verify"
+setup_hooks = []
+pre_commit_hooks = []
+post_commit_hooks = []
+
+
+[tool.bumpversion.parts.pre_label]
+values = ["dev", "rc", "final"]
+optional_value = "final"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+
+{% endraw %}
+[tool.towncrier]
+name = "{{cookiecutter.project_slug}}"
+filename = "CHANGES.md"
+package = "{{ cookiecutter.project_slug }}"
+package_dir = "src"
+underlines = ["", "", ""]
+{% raw %}
+title_format = "## [{version}](https://github.com/glencoe/pycolint/tree/{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/glencoe/pycolint/issues/{issue})"
+{% endraw %}
+{% endif %}
