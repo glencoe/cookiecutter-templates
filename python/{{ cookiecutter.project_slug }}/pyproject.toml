@@ -82,9 +82,8 @@ line-ending = "auto"
 minversion = "0.6"
 testpaths = ["testing"]
 addopts = ["--import-mode=importlib"]
-norecursedirs = [".git", ".direnv"]
+norecursedirs = [".git", ".direnv", ".devenv"]
 python_files = ["*_test.py", "test_*.py"]
-classes = ["*Test", "Test*"]
 
 
 [build-system]
